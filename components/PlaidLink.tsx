@@ -1,35 +1,41 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { useRouter } from 'next/router';
-import { createLinkToken } from '@/lib/actions/user.actions';
 import { PlaidLinkOnSuccess, PlaidLinkOptions, usePlaidLink } from 'react-plaid-link'
+import { StyledString } from 'next/dist/build/swc';
+import { useRouter } from 'next/navigation';
+import { createLinkToken, exchangePublicToken } from '@/lib/actions/user.actions';
 
 const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
   const router = useRouter();
+
   const [token, setToken] = useState('');
 
   useEffect(() => {
     const getLinkToken = async () => {
-      const data = await createLinkToken(user)
-      setToken(data?.linkToken)
+      const data = await createLinkToken(user);
+
+      setToken(data?.linkToken);
     }
+
     getLinkToken();
+  }, [user]);
+
+  const onSuccess = useCallback<PlaidLinkOnSuccess>(async (public_token: string) => {
+    await exchangePublicToken({
+      publicToken: public_token,
+      user,
+    })
+
+    router.push('/');
   }, [user])
 
-  //just call 1 time, when user change
-  const onSuccess = useCallback(async (pulic_token: string) => {
-    // await exchangePublicToken({
-    //   publicToken:public_token,
-    //   user,
-    // })
-    router.push('/')
-
-  }, [user])
   const config: PlaidLinkOptions = {
     token,
     onSuccess
   }
-  const { open, ready } = usePlaidLink(config)
+
+  const { open, ready } = usePlaidLink(config);
+
   return (
     <>
       {variant === 'primary' ? (

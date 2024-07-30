@@ -16,6 +16,7 @@ const getEnvironment = (): "production" | "sandbox" => {
       );
   }
 };
+
 const dwollaClient = new Client({
   environment: getEnvironment(),
   key: process.env.DWOLLA_KEY as string,
@@ -50,6 +51,46 @@ export const createOnDemandAuthorization = async () => {
   }
 };
 
+export const createDwollaCustomer = async (
+  newCustomer: NewDwollaCustomerParams
+) => {
+  try {
+    return await dwollaClient
+      .post("customers", newCustomer)
+      .then((res) => res.headers.get("location"));
+  } catch (err) {
+    console.error("Creating a Dwolla Customer Failed: ", err);
+  }
+};
+
+export const createTransfer = async ({
+  sourceFundingSourceUrl,
+  destinationFundingSourceUrl,
+  amount,
+}: TransferParams) => {
+  try {
+    const requestBody = {
+      _links: {
+        source: {
+          href: sourceFundingSourceUrl,
+        },
+        destination: {
+          href: destinationFundingSourceUrl,
+        },
+      },
+      amount: {
+        currency: "USD",
+        value: amount,
+      },
+    };
+    return await dwollaClient
+      .post("transfers", requestBody)
+      .then((res) => res.headers.get("location"));
+  } catch (err) {
+    console.error("Transfer fund failed: ", err);
+  }
+};
+
 export const addFundingSource = async ({
   dwollaCustomerId,
   processorToken,
@@ -69,16 +110,5 @@ export const addFundingSource = async ({
     return await createFundingSource(fundingSourceOptions);
   } catch (err) {
     console.error("Transfer fund failed: ", err);
-  }
-};
-export const createDwollaCustomer = async (
-  newCustomer: NewDwollaCustomerParams
-) => {
-  try {
-    return await dwollaClient
-      .post("customers", newCustomer)
-      .then((res) => res.headers.get("location"));
-  } catch (err) {
-    console.error("Creating a Dwolla Customer Failed: ", err);
   }
 };

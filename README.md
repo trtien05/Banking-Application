@@ -1394,7 +1394,7 @@ export default PaymentTransferForm;
 </details>
 
 <details>
-<summary><code>Missing from the video (top right on the transaction list page) BankDropdown.tsx</code></summary>
+<summary><code>BankDropdown.tsx</code></summary>
 
 ```typescript
 "use client";

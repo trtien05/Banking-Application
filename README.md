@@ -78,7 +78,7 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/adrianhajdin/banking.git
+git clone https://github.com/trtien05/Banking-Application.git
 cd banking
 ```
 
